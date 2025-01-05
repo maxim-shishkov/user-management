@@ -1,0 +1,13 @@
+{
+  "database": {
+    "host": "localhost",
+    "port": 5432,
+    "user": "user",
+    "password": "password",
+    "dbname": "users",
+    "sslmode": "disable"
+  },
+  "server": {
+    "port": "8080"
+  }
+}
