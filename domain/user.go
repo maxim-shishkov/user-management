@@ -10,17 +10,18 @@ type User struct {
 }
 
 type UserRepository interface {
-	Create(ctx context.Context, user *User) (int64, error)
+	Create(ctx context.Context, user *User) (int, error)
 	Update(ctx context.Context, user *User) error
-	Delete(ctx context.Context, id int64) error
-	GetByID(ctx context.Context, id int64) (*User, error)
+	Delete(ctx context.Context, id int) error
+	GetByID(ctx context.Context, id int) (*User, error)
 	GetAll(ctx context.Context) ([]*User, error)
 }
 
-type UserService interface {
-	CreateUser(ctx context.Context, user *User) (int64, error)
-	UpdateUser(ctx context.Context, user *User) error
-	DeleteUser(ctx context.Context, id int64) error
-	GetUserByID(ctx context.Context, id int64) (*User, error)
-	ListUsers(ctx context.Context) ([]*User, error)
-}
+//
+//type UserService interface {
+//	CreateUser(ctx context.Context, user *User) (int64, error)
+//	UpdateUser(ctx context.Context, user *User) error
+//	DeleteUser(ctx context.Context, id int) error
+//	GetUserByID(ctx context.Context, id int) (*User, error)
+//	ListUsers(ctx context.Context) ([]*User, error)
+//}

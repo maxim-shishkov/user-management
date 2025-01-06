@@ -5,35 +5,21 @@ import (
 	"os"
 )
 
-type DatabaseConfig struct {
-	Host     string `json:"host"`
-	Port     int    `json:"port"`
-	User     string `json:"user"`
-	Password string `json:"password"`
-	DBName   string `json:"dbname"`
-	SSLMode  string `json:"sslmode"`
-}
-
-type ServerConfig struct {
-	Port string `json:"port"`
-}
-
 type Config struct {
-	Database DatabaseConfig `json:"database"`
-	Server   ServerConfig   `json:"server"`
+	ServerAddress string `json:"server_address"`
+	DatabaseDSN   string `json:"database_dsn"`
 }
 
-func LoadConfig(filePath string) (*Config, error) {
-	file, err := os.Open(filePath)
+func LoadConfig(path string) (*Config, error) {
+	file, err := os.Open(path)
 	if err != nil {
 		return nil, err
 	}
 	defer file.Close()
 
-	var config Config
-	if err := json.NewDecoder(file).Decode(&config); err != nil {
+	var cfg Config
+	if err := json.NewDecoder(file).Decode(&cfg); err != nil {
 		return nil, err
 	}
-
-	return &config, nil
+	return &cfg, nil
 }

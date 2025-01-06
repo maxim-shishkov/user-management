@@ -1,10 +1,33 @@
 version: '3.8'
+
 services:
-  postgres:
-    image: postgres:15
+  app:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    ports:
+      - "8080:8080"
+    volumes:
+      - .:/app
     environment:
-      POSTGRES_USER: user
-      POSTGRES_PASSWORD: password
-      POSTGRES_DB: users
+      - DB_HOST=localhost
+      - DB_PORT=5432
+      - DB_USER=your_user
+      - DB_PASSWORD=your_password
+      - DB_NAME=your_db_name
+    depends_on:
+      - db
+
+  db:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: your_user
+      POSTGRES_PASSWORD: your_password
+      POSTGRES_DB: your_db_name
     ports:
       - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:

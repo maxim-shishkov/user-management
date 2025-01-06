@@ -3,7 +3,9 @@ package repository
 import (
 	"context"
 	"database/sql"
+	"fmt"
 
+	_ "github.com/lib/pq"
 	"user-management/domain"
 )
 
@@ -11,13 +13,17 @@ type UserRepository struct {
 	db *sql.DB
 }
 
-func NewUserRepository(db *sql.DB) *UserRepository {
-	return &UserRepository{db: db}
+func NewUserRepository(dsn string) (*UserRepository, error) {
+	db, err := sql.Open("postgres", dsn)
+	if err != nil {
+		return nil, fmt.Errorf("failed to connect to database: %v", err)
+	}
+	return &UserRepository{db: db}, nil
 }
 
-func (r *UserRepository) Create(ctx context.Context, user *domain.User) (int64, error) {
+func (r *UserRepository) Create(ctx context.Context, user *domain.User) (int, error) {
 	query := `INSERT INTO users (name, email, password) VALUES ($1, $2, $3) RETURNING id`
-	var id int64
+	var id int
 	err := r.db.QueryRowContext(ctx, query, user.Name, user.Email, user.Password).Scan(&id)
 	return id, err
 }
@@ -28,13 +34,21 @@ func (r *UserRepository) Update(ctx context.Context, user *domain.User) error {
 	return err
 }
 
-func (r *UserRepository) Delete(ctx context.Context, id int64) error {
+func (r *UserRepository) Delete(ctx context.Context, id int) error {
 	query := `DELETE FROM users WHERE id = $1`
 	_, err := r.db.ExecContext(ctx, query, id)
 	return err
 }
 
-func (r *UserRepository) GetByID(ctx context.Context, id int64) (*domain.User, error) {
+func (r *UserRepository) GetByID(ctx context.Context, id int) (*domain.User, error) {
+
+	return &domain.User{
+		ID:       1,
+		Name:     "Max",
+		Email:    "email@mail.ru",
+		Password: "qwe123",
+	}, nil
+
 	query := `SELECT id, name, email, password FROM users WHERE id = $1`
 	user := &domain.User{}
 	err := r.db.QueryRowContext(ctx, query, id).Scan(&user.ID, &user.Name, &user.Email, &user.Password)

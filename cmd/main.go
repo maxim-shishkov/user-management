@@ -1,46 +1,37 @@
 package main
 
 import (
-	"database/sql"
-	"fmt"
 	"log"
+	"net/http"
 
 	"user-management/api"
 	"user-management/config"
 	"user-management/repository"
-	"user-management/server"
 	"user-management/service"
 
-	_ "github.com/lib/pq"
+	"github.com/go-chi/chi/v5"
+	"github.com/go-chi/chi/v5/middleware"
 )
 
 func main() {
-	// Load configuration
-	cfg, err := config.LoadConfig("config/config.json")
+	cfg, err := config.LoadConfig("/config/config.json")
 	if err != nil {
-		log.Fatalf("Failed to load config: %v", err)
+		log.Fatalf("failed to load config: %v", err)
 	}
 
-	// Database connection
-	dsn := fmt.Sprintf("host=%s port=%d user=%s password=%s dbname=%s sslmode=%s",
-		cfg.Database.Host, cfg.Database.Port, cfg.Database.User,
-		cfg.Database.Password, cfg.Database.DBName, cfg.Database.SSLMode)
+	r := chi.NewRouter()
+	r.Use(middleware.Logger)
+	r.Use(middleware.Recoverer)
 
-	db, err := sql.Open("postgres", dsn)
+	userRepo, err := repository.NewUserRepository(cfg.DatabaseDSN)
 	if err != nil {
-		log.Fatalf("Failed to connect to database: %v", err)
+		panic(err)
 	}
-	defer db.Close()
+	userService := service.NewUserService(userRepo)
+	api.RegisterRoutes(r, userService)
 
-	// Initialize layers
-	repo := repository.NewUserRepository(db)
-	srv := service.NewUserService(repo)
-	handler := api.NewHandler(srv)
-	s := server.NewServer(handler)
-
-	// Start server
-	log.Printf("Starting server on port %s", cfg.Server.Port)
-	if err := s.Start(cfg.Server.Port); err != nil {
-		log.Fatalf("Server failed to start: %v", err)
+	log.Printf("Starting server on %s...", cfg.ServerAddress)
+	if err := http.ListenAndServe(cfg.ServerAddress, r); err != nil {
+		log.Fatalf("failed to start server: %v", err)
 	}
 }
