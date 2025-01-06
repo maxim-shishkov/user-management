@@ -20,7 +20,7 @@ COPY ../ ./
 WORKDIR /app/cmd
 
 # Собираем приложение
-RUN go build -o yourapp .
+RUN go build -o app .
 
 # Используем более новый образ с обновленной версией glibc (Debian Bookworm)
 FROM debian:bookworm-slim
@@ -29,7 +29,7 @@ FROM debian:bookworm-slim
 RUN apt-get update && apt-get install -y libc6
 
 # Копируем скомпилированное приложение из предыдущего шага
-COPY --from=build /app/cmd/yourapp /usr/local/bin/yourapp
+COPY --from=build /app/cmd/app /usr/local/bin/app
 
 # Копируем файл конфигурации из сборки (если нужно)
 COPY --from=build /app/config/config.json /config/config.json
@@ -38,4 +38,4 @@ COPY --from=build /app/config/config.json /config/config.json
 EXPOSE 8080
 
 # Команда для запуска приложения
-CMD ["/usr/local/bin/yourapp"]
+CMD ["/usr/local/bin/app"]

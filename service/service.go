@@ -2,45 +2,42 @@ package service
 
 import (
 	"context"
-	"fmt"
 
 	"user-management/domain"
 )
 
-type UserService struct {
-	repo domain.UserRepository
+type UserRepository interface {
+	Create(ctx context.Context, user *domain.User) (int, error)
+	Update(ctx context.Context, user *domain.User) error
+	Delete(ctx context.Context, id int) error
+	GetByID(ctx context.Context, id int) (*domain.User, error)
+	GetAll(ctx context.Context) ([]*domain.User, error)
 }
 
-func NewUserService(repo domain.UserRepository) *UserService {
+type UserService struct {
+	repo UserRepository
+}
+
+func NewUserService(repo UserRepository) *UserService {
 	return &UserService{repo: repo}
 }
 
-func (s *UserService) CreateUser(ctx context.Context, req CreateUserRequest) (any, error) {
-	return UserResponse{}, nil
+func (s *UserService) CreateUser(ctx context.Context, user *domain.User) (int, error) {
+	return s.repo.Create(ctx, user)
 }
 
-func (s *UserService) GetUser(ctx context.Context, req GetUserRequest) (any, error) {
-
-	if req.ID != 12345 {
-		return nil, fmt.Errorf("qwe error")
-	}
-
-	user, err := s.repo.GetByID(ctx, req.ID)
-	if err != nil {
-		return nil, err
-	}
-
-	return UserResponse{
-		ID:    fmt.Sprint(user.ID),
-		Name:  user.Name,
-		Email: user.Email,
-	}, nil
+func (s *UserService) UpdateUser(ctx context.Context, user *domain.User) error {
+	return s.repo.Update(ctx, user)
 }
 
-func (s *UserService) UpdateUser(ctx context.Context, req UpdateUserRequest) (any, error) {
-	return UserResponse{}, nil
+func (s *UserService) DeleteUser(ctx context.Context, id int) error {
+	return s.repo.Delete(ctx, id)
 }
 
-func (s *UserService) DeleteUser(ctx context.Context, req DeleteUserRequest) (any, error) {
-	return nil, nil
+func (s *UserService) GetUserByID(ctx context.Context, id int) (*domain.User, error) {
+	return s.repo.GetByID(ctx, id)
+}
+
+func (s *UserService) ListUsers(ctx context.Context) ([]*domain.User, error) {
+	return s.repo.GetAll(ctx)
 }

@@ -9,21 +9,15 @@ services:
       - "8080:8080"
     volumes:
       - .:/app
-    environment:
-      - DB_HOST=localhost
-      - DB_PORT=5432
-      - DB_USER=your_user
-      - DB_PASSWORD=your_password
-      - DB_NAME=your_db_name
     depends_on:
       - db
 
   db:
     image: postgres:13
     environment:
-      POSTGRES_USER: your_user
-      POSTGRES_PASSWORD: your_password
-      POSTGRES_DB: your_db_name
+      POSTGRES_USER: user_management
+      POSTGRES_PASSWORD: passw0rd
+      POSTGRES_DB: user_management
     ports:
       - "5432:5432"
     volumes:

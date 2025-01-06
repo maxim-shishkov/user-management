@@ -1,4 +1,4 @@
 {
   "server_address": ":8080",
-  "database_dsn": "postgres://user:password@localhost:5432/user_management?sslmode=disable"
+  "database_dsn": "postgres://user_management:passw0rd@db:5432/user_management?sslmode=disable"
 }
