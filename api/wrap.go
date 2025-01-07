@@ -6,7 +6,7 @@ import (
 	"net/http"
 )
 
-func WrapHandler[Req any](handler func(ctx context.Context, req Req) (any, error)) http.HandlerFunc {
+func WrapHandler[Req any, Res any](handler func(ctx context.Context, req Req) (Res, error)) http.HandlerFunc {
 	return func(w http.ResponseWriter, r *http.Request) {
 		var req Req
 

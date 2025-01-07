@@ -26,7 +26,7 @@ func NewUserRepository(dsn string) (*UserRepository, error) {
 }
 
 func (r *UserRepository) Create(ctx context.Context, user *domain.User) (int, error) {
-	query := `INSERT INTO users (name, email) VALUES ($1, $2, $3) RETURNING id`
+	query := `INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id`
 	var id int
 	err := r.db.QueryRowContext(ctx, query, user.Name, user.Email).Scan(&id)
 	return id, err

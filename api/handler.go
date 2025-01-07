@@ -9,10 +9,10 @@ func RegisterRoutes(r chi.Router, s UserService) {
 	r.Get("/ping", PongHandler)
 
 	r.Route("/user", func(r chi.Router) {
-		r.Post("/list", WrapHandler[ListUserRequest](ListUsersHandler(s)))
-		r.Post("/get", WrapHandler[GetUserRequest](GetUserHandler(s)))
-		r.Post("/create", WrapHandler[CreateUserRequest](CreateUserHandler(s)))
-		r.Post("/update", WrapHandler[UpdateUserRequest](UpdateUserHandler(s)))
-		r.Post("/delete", WrapHandler[DeleteUserRequest](DeleteUserHandler(s)))
+		r.Post("/list", WrapHandler[ListRequest, ListResponse](ListHandler(s)))
+		r.Post("/get", WrapHandler[GetRequest, GetResponse](GetHandler(s)))
+		r.Post("/create", WrapHandler[CreateRequest, CreateResponse](CreateHandler(s)))
+		r.Post("/update", WrapHandler[UpdateRequest, UpdateResponse](UpdateHandler(s)))
+		r.Post("/delete", WrapHandler[DeleteRequest, DeleteResponse](DeleteHandler(s)))
 	})
 }
