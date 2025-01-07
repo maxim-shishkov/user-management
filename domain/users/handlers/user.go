@@ -1,17 +1,17 @@
-package api
+package handlers
 
 import (
 	"context"
 
-	"user-management/domain"
+	"user-management/domain/users"
 )
 
 type UserService interface {
-	CreateUser(ctx context.Context, user *domain.User) (int, error)
-	UpdateUser(ctx context.Context, user *domain.User) error
+	CreateUser(ctx context.Context, user *users.User) (int, error)
+	UpdateUser(ctx context.Context, user *users.User) error
 	DeleteUser(ctx context.Context, id int) error
-	GetUserByID(ctx context.Context, id int) (*domain.User, error)
-	ListUsers(ctx context.Context) ([]*domain.User, error)
+	GetUserByID(ctx context.Context, id int) (*users.User, error)
+	ListUsers(ctx context.Context) ([]*users.User, error)
 }
 
 type CreateRequest struct {
@@ -24,7 +24,7 @@ type CreateResponse struct {
 
 func CreateHandler(s UserService) func(ctx context.Context, req CreateRequest) (CreateResponse, error) {
 	return func(ctx context.Context, req CreateRequest) (CreateResponse, error) {
-		user := &domain.User{
+		user := &users.User{
 			Name:  req.Name,
 			Email: req.Email,
 		}
@@ -42,7 +42,7 @@ type UpdateResponse struct{}
 
 func UpdateHandler(s UserService) func(ctx context.Context, req UpdateRequest) (UpdateResponse, error) {
 	return func(ctx context.Context, req UpdateRequest) (UpdateResponse, error) {
-		user := &domain.User{
+		user := &users.User{
 			ID:    req.ID,
 			Name:  req.Name,
 			Email: req.Email,
@@ -68,7 +68,7 @@ type GetRequest struct {
 	ID int `json:"id"`
 }
 type GetResponse struct {
-	User domain.User `json:"user"`
+	User users.User `json:"user"`
 }
 
 func GetHandler(s UserService) func(ctx context.Context, req GetRequest) (GetResponse, error) {
@@ -80,7 +80,7 @@ func GetHandler(s UserService) func(ctx context.Context, req GetRequest) (GetRes
 
 type ListRequest struct{}
 type ListResponse struct {
-	Users []*domain.User `json:"users"`
+	Users []*users.User `json:"users"`
 }
 
 func ListHandler(s UserService) func(ctx context.Context, req ListRequest) (ListResponse, error) {

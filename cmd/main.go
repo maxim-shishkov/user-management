@@ -6,8 +6,8 @@ import (
 
 	"user-management/api"
 	"user-management/config"
-	"user-management/repository"
-	"user-management/service"
+	"user-management/domain/users/repository"
+	"user-management/domain/users/service"
 
 	"github.com/go-chi/chi/v5"
 	"github.com/go-chi/chi/v5/middleware"

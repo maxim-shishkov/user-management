@@ -6,7 +6,7 @@ import (
 	"fmt"
 
 	_ "github.com/lib/pq"
-	"user-management/domain"
+	"user-management/domain/users"
 )
 
 type UserRepository struct {
@@ -25,14 +25,14 @@ func NewUserRepository(dsn string) (*UserRepository, error) {
 	return &UserRepository{db: db}, nil
 }
 
-func (r *UserRepository) Create(ctx context.Context, user *domain.User) (int, error) {
+func (r *UserRepository) Create(ctx context.Context, user *users.User) (int, error) {
 	query := `INSERT INTO users (name, email) VALUES ($1, $2) RETURNING id`
 	var id int
 	err := r.db.QueryRowContext(ctx, query, user.Name, user.Email).Scan(&id)
 	return id, err
 }
 
-func (r *UserRepository) Update(ctx context.Context, user *domain.User) error {
+func (r *UserRepository) Update(ctx context.Context, user *users.User) error {
 	query := `UPDATE users SET name = $1, email = $2  WHERE id = $3`
 	_, err := r.db.ExecContext(ctx, query, user.Name, user.Email, user.ID)
 	return err
@@ -44,14 +44,14 @@ func (r *UserRepository) Delete(ctx context.Context, id int) error {
 	return err
 }
 
-func (r *UserRepository) GetByID(ctx context.Context, id int) (*domain.User, error) {
+func (r *UserRepository) GetByID(ctx context.Context, id int) (*users.User, error) {
 	query := `SELECT id, name, email FROM users WHERE id = $1`
-	user := &domain.User{}
+	user := &users.User{}
 	err := r.db.QueryRowContext(ctx, query, id).Scan(&user.ID, &user.Name, &user.Email)
 	return user, err
 }
 
-func (r *UserRepository) GetAll(ctx context.Context) ([]*domain.User, error) {
+func (r *UserRepository) GetAll(ctx context.Context) ([]*users.User, error) {
 	query := `SELECT id, name, email FROM users`
 	rows, err := r.db.QueryContext(ctx, query)
 	if err != nil {
@@ -59,13 +59,14 @@ func (r *UserRepository) GetAll(ctx context.Context) ([]*domain.User, error) {
 	}
 	defer rows.Close()
 
-	var users []*domain.User
+	var us []*users.User
 	for rows.Next() {
-		user := &domain.User{}
+		user := &users.User{}
 		if err := rows.Scan(&user.ID, &user.Name, &user.Email); err != nil {
 			return nil, err
 		}
-		users = append(users, user)
+		us = append(us, user)
 	}
-	return users, nil
+
+	return us, nil
 }
