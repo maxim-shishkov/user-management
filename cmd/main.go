@@ -2,12 +2,12 @@ package main
 
 import (
 	"context"
-	"log"
 	"net/http"
 	"os"
 	"os/signal"
 	"time"
 
+	"go.uber.org/zap"
 	"user-management/api"
 	"user-management/config"
 	"user-management/domain/users/repository"
@@ -18,9 +18,15 @@ import (
 )
 
 func main() {
+	logger, err := zap.NewProduction()
+	if err != nil {
+		logger.Fatal("failed to initialize user repository", zap.Error(err))
+	}
+	defer logger.Sync()
+
 	cfg, err := config.LoadConfig("/config/config.json")
 	if err != nil {
-		log.Fatalf("failed to load config: %v", err)
+		logger.Fatal("failed to load config: %v", zap.Error(err))
 	}
 
 	r := chi.NewRouter()
@@ -29,35 +35,35 @@ func main() {
 
 	userRepo, err := repository.NewUserRepository(cfg.DatabaseURL)
 	if err != nil {
-		log.Fatalf("failed to initialize user repository: %v", err)
+		logger.Fatal("failed to initialize user repository", zap.Error(err))
 	}
 	defer userRepo.Close()
 
-	userService := service.NewUserService(userRepo)
-	api.RegisterRoutes(r, userService)
+	userService := service.NewUserService(userRepo, logger)
+	api.RegisterRoutes(r, userService, logger)
 
 	srv := &http.Server{
 		Addr:    cfg.ServerAddress,
 		Handler: r,
 	}
 
-	log.Printf("Starting server on %s...", cfg.ServerAddress)
+	logger.Info("starting server", zap.String("address", cfg.ServerAddress))
 	go func() {
 		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
-			log.Fatalf("server error: %v", err)
+			logger.Fatal("server error", zap.Error(err))
 		}
 	}()
 
 	quit := make(chan os.Signal, 1)
 	signal.Notify(quit, os.Interrupt)
 	<-quit
-	log.Println("shutting down server...")
+	logger.Info("shutting down server...")
 
 	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
 	defer cancel()
 	if err := srv.Shutdown(ctx); err != nil {
-		log.Fatalf("server forced to shutdown: %v", err)
+		logger.Error("server forced to shutdown", zap.Error(err))
 	}
 
-	log.Println("server stopped.")
+	logger.Info("server stopped.")
 }
