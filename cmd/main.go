@@ -1,8 +1,12 @@
 package main
 
 import (
+	"context"
 	"log"
 	"net/http"
+	"os"
+	"os/signal"
+	"time"
 
 	"user-management/api"
 	"user-management/config"
@@ -23,15 +27,37 @@ func main() {
 	r.Use(middleware.Logger)
 	r.Use(middleware.Recoverer)
 
-	userRepo, err := repository.NewUserRepository(cfg.DatabaseDSN)
+	userRepo, err := repository.NewUserRepository(cfg.DatabaseURL)
 	if err != nil {
-		panic(err)
+		log.Fatalf("failed to initialize user repository: %v", err)
 	}
+	defer userRepo.Close()
+
 	userService := service.NewUserService(userRepo)
 	api.RegisterRoutes(r, userService)
 
-	log.Printf("Starting server on %s...", cfg.ServerAddress)
-	if err := http.ListenAndServe(cfg.ServerAddress, r); err != nil {
-		log.Fatalf("failed to start server: %v", err)
+	srv := &http.Server{
+		Addr:    cfg.ServerAddress,
+		Handler: r,
 	}
+
+	log.Printf("Starting server on %s...", cfg.ServerAddress)
+	go func() {
+		if err := srv.ListenAndServe(); err != nil && err != http.ErrServerClosed {
+			log.Fatalf("server error: %v", err)
+		}
+	}()
+
+	quit := make(chan os.Signal, 1)
+	signal.Notify(quit, os.Interrupt)
+	<-quit
+	log.Println("shutting down server...")
+
+	ctx, cancel := context.WithTimeout(context.Background(), 5*time.Second)
+	defer cancel()
+	if err := srv.Shutdown(ctx); err != nil {
+		log.Fatalf("server forced to shutdown: %v", err)
+	}
+
+	log.Println("server stopped.")
 }

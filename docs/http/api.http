@@ -6,18 +6,18 @@ Content-Type: application/json
 
 ###
 
-#
+# Create
 POST http://localhost:8080/user/create
 Content-Type: application/json
 
 {
-  "name": "max",
-  "email": "mail@email.ru"
+  "name": "Ivan",
+  "email": "ivan@email.ru"
 }
 
 ###
 
-#
+# Get
 POST http://localhost:8080/user/get
 Content-Type: application/json
 
@@ -27,7 +27,32 @@ Content-Type: application/json
 
 ###
 
+# List
 POST http://localhost:8080/user/list
 Content-Type: application/json
 
 {}
+
+###
+
+# Update
+POST http://localhost:8080/user/update
+Content-Type: application/json
+
+{
+  "id": 1,
+  "name": "Petr",
+  "email": "petr@email.ru"
+}
+
+###
+
+# Delete
+POST http://localhost:8080/user/delete
+Content-Type: application/json
+
+{
+  "id": 1
+}
+
+###

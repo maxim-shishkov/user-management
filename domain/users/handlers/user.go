@@ -14,78 +14,46 @@ type UserService interface {
 	ListUsers(ctx context.Context) ([]*users.User, error)
 }
 
-type CreateRequest struct {
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-type CreateResponse struct {
-	Id int `json:"id"`
-}
-
-func CreateHandler(s UserService) func(ctx context.Context, req CreateRequest) (CreateResponse, error) {
-	return func(ctx context.Context, req CreateRequest) (CreateResponse, error) {
+func CreateHandler(s UserService) func(ctx context.Context, req users.CreateRequest) (users.CreateResponse, error) {
+	return func(ctx context.Context, req users.CreateRequest) (users.CreateResponse, error) {
 		user := &users.User{
 			Name:  req.Name,
 			Email: req.Email,
 		}
 		id, err := s.CreateUser(ctx, user)
-		return CreateResponse{Id: id}, err
+		return users.CreateResponse{Id: id}, err
 	}
 }
 
-type UpdateRequest struct {
-	ID    int    `json:"id"`
-	Name  string `json:"name"`
-	Email string `json:"email"`
-}
-type UpdateResponse struct{}
-
-func UpdateHandler(s UserService) func(ctx context.Context, req UpdateRequest) (UpdateResponse, error) {
-	return func(ctx context.Context, req UpdateRequest) (UpdateResponse, error) {
+func UpdateHandler(s UserService) func(ctx context.Context, req users.UpdateRequest) (users.UpdateResponse, error) {
+	return func(ctx context.Context, req users.UpdateRequest) (users.UpdateResponse, error) {
 		user := &users.User{
 			ID:    req.ID,
 			Name:  req.Name,
 			Email: req.Email,
 		}
 		err := s.UpdateUser(ctx, user)
-		return UpdateResponse{}, err
+		return users.UpdateResponse{}, err
 	}
 }
 
-type DeleteRequest struct {
-	ID int `json:"id"`
-}
-type DeleteResponse struct{}
-
-func DeleteHandler(s UserService) func(ctx context.Context, req DeleteRequest) (DeleteResponse, error) {
-	return func(ctx context.Context, req DeleteRequest) (DeleteResponse, error) {
+func DeleteHandler(s UserService) func(ctx context.Context, req users.DeleteRequest) (users.DeleteResponse, error) {
+	return func(ctx context.Context, req users.DeleteRequest) (users.DeleteResponse, error) {
 		err := s.DeleteUser(ctx, req.ID)
-		return DeleteResponse{}, err
+		return users.DeleteResponse{}, err
 	}
 }
 
-type GetRequest struct {
-	ID int `json:"id"`
-}
-type GetResponse struct {
-	User users.User `json:"user"`
-}
-
-func GetHandler(s UserService) func(ctx context.Context, req GetRequest) (GetResponse, error) {
-	return func(ctx context.Context, req GetRequest) (GetResponse, error) {
+func GetHandler(s UserService) func(ctx context.Context, req users.GetRequest) (users.GetResponse, error) {
+	return func(ctx context.Context, req users.GetRequest) (users.GetResponse, error) {
 		user, err := s.GetUserByID(ctx, req.ID)
-		return GetResponse{User: *user}, err
+		return users.GetResponse{User: *user}, err
 	}
 }
 
-type ListRequest struct{}
-type ListResponse struct {
-	Users []*users.User `json:"users"`
-}
-
-func ListHandler(s UserService) func(ctx context.Context, req ListRequest) (ListResponse, error) {
-	return func(ctx context.Context, req ListRequest) (ListResponse, error) {
-		users, err := s.ListUsers(ctx)
-		return ListResponse{users}, err
+func ListHandler(s UserService) func(ctx context.Context, req users.ListRequest) (users.ListResponse, error) {
+	return func(ctx context.Context, req users.ListRequest) (users.ListResponse, error) {
+		us, err := s.ListUsers(ctx)
+		return users.ListResponse{us}, err
 	}
 }

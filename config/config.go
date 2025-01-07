@@ -7,7 +7,7 @@ import (
 
 type Config struct {
 	ServerAddress string `json:"server_address"`
-	DatabaseDSN   string `json:"database_dsn"`
+	DatabaseURL   string `json:"database_url"`
 }
 
 func LoadConfig(path string) (*Config, error) {
