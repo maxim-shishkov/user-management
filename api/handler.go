@@ -2,12 +2,11 @@ package api
 
 import (
 	"github.com/go-chi/chi/v5"
-	"go.uber.org/zap"
 	"user-management/domain/users"
 	"user-management/domain/users/handlers"
 )
 
-func RegisterRoutes(r chi.Router, s handlers.UserService, logger *zap.Logger) {
+func RegisterRoutes(r chi.Router, s handlers.UserService) {
 	r.Get("/", VersionHandler)
 	r.Get("/ping", PongHandler)
 

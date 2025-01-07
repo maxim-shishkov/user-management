@@ -40,7 +40,7 @@ func main() {
 	defer userRepo.Close()
 
 	userService := service.NewUserService(userRepo, logger)
-	api.RegisterRoutes(r, userService, logger)
+	api.RegisterRoutes(r, userService)
 
 	srv := &http.Server{
 		Addr:    cfg.ServerAddress,

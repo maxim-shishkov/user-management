@@ -2,8 +2,10 @@ package repository
 
 import (
 	"context"
+	"errors"
 	"fmt"
 
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 	"user-management/domain/users"
 )
@@ -57,6 +59,9 @@ func (r *UserRepository) GetByID(ctx context.Context, id int) (*users.User, erro
 	user := &users.User{}
 	err := r.db.QueryRow(ctx, query, id).Scan(&user.ID, &user.Name, &user.Email)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, nil
+		}
 		return nil, fmt.Errorf("failed to get user by ID: %w", err)
 	}
 	return user, nil

@@ -62,7 +62,7 @@ func GetHandler(s UserService) func(ctx context.Context, req users.GetRequest) (
 			return users.GetResponse{}, fmt.Errorf("s.GetUserByID: %v", err)
 		}
 
-		return users.GetResponse{User: *user}, nil
+		return users.GetResponse{User: user}, nil
 	}
 }
 
