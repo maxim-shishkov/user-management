@@ -2,6 +2,7 @@ package handlers
 
 import (
 	"context"
+	"fmt"
 
 	"user-management/domain/users"
 )
@@ -21,7 +22,11 @@ func CreateHandler(s UserService) func(ctx context.Context, req users.CreateRequ
 			Email: req.Email,
 		}
 		id, err := s.CreateUser(ctx, user)
-		return users.CreateResponse{Id: id}, err
+		if err != nil {
+			return users.CreateResponse{}, fmt.Errorf("s.CreateUser: %v", err)
+		}
+
+		return users.CreateResponse{Id: id}, nil
 	}
 }
 
@@ -32,28 +37,42 @@ func UpdateHandler(s UserService) func(ctx context.Context, req users.UpdateRequ
 			Name:  req.Name,
 			Email: req.Email,
 		}
-		err := s.UpdateUser(ctx, user)
-		return users.UpdateResponse{}, err
+		if err := s.UpdateUser(ctx, user); err != nil {
+			return users.UpdateResponse{}, fmt.Errorf("s.UpdateUser: %v", err)
+		}
+
+		return users.UpdateResponse{}, nil
 	}
 }
 
 func DeleteHandler(s UserService) func(ctx context.Context, req users.DeleteRequest) (users.DeleteResponse, error) {
 	return func(ctx context.Context, req users.DeleteRequest) (users.DeleteResponse, error) {
-		err := s.DeleteUser(ctx, req.ID)
-		return users.DeleteResponse{}, err
+		if err := s.DeleteUser(ctx, req.ID); err != nil {
+			return users.DeleteResponse{}, fmt.Errorf("s.DeleteUser: %v", err)
+		}
+
+		return users.DeleteResponse{}, nil
 	}
 }
 
 func GetHandler(s UserService) func(ctx context.Context, req users.GetRequest) (users.GetResponse, error) {
 	return func(ctx context.Context, req users.GetRequest) (users.GetResponse, error) {
 		user, err := s.GetUserByID(ctx, req.ID)
-		return users.GetResponse{User: *user}, err
+		if err != nil {
+			return users.GetResponse{}, fmt.Errorf("s.GetUserByID: %v", err)
+		}
+
+		return users.GetResponse{User: *user}, nil
 	}
 }
 
 func ListHandler(s UserService) func(ctx context.Context, req users.ListRequest) (users.ListResponse, error) {
 	return func(ctx context.Context, req users.ListRequest) (users.ListResponse, error) {
 		us, err := s.ListUsers(ctx)
-		return users.ListResponse{us}, err
+		if err != nil {
+			return users.ListResponse{}, fmt.Errorf("s.ListUsers: %v", err)
+		}
+
+		return users.ListResponse{Users: us}, nil
 	}
 }
