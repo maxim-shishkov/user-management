@@ -13,7 +13,7 @@ type UserRepository interface {
 	Update(ctx context.Context, user *users.User) error
 	Delete(ctx context.Context, id int) error
 	GetByID(ctx context.Context, id int) (*users.User, error)
-	GetAll(ctx context.Context) ([]*users.User, error)
+	GetAll(ctx context.Context) ([]users.User, error)
 }
 
 type UserService struct {
@@ -59,7 +59,7 @@ func (s *UserService) GetUserByID(ctx context.Context, id int) (*users.User, err
 	return u, nil
 }
 
-func (s *UserService) ListUsers(ctx context.Context) ([]*users.User, error) {
+func (s *UserService) ListUsers(ctx context.Context) ([]users.User, error) {
 	us, err := s.repo.GetAll(ctx)
 	if err != nil {
 		return nil, fmt.Errorf("repo.GetAll: %v", err)

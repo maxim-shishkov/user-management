@@ -51,7 +51,7 @@ func (get GetRequest) Validate() error {
 
 type ListRequest struct{}
 type ListResponse struct {
-	Users []*User `json:"users"`
+	Users []User `json:"users"`
 }
 
 func (get ListRequest) Validate() error {

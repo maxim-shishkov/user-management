@@ -12,7 +12,7 @@ type UserService interface {
 	UpdateUser(ctx context.Context, user *users.User) error
 	DeleteUser(ctx context.Context, id int) error
 	GetUserByID(ctx context.Context, id int) (*users.User, error)
-	ListUsers(ctx context.Context) ([]*users.User, error)
+	ListUsers(ctx context.Context) ([]users.User, error)
 }
 
 func CreateHandler(s UserService) func(ctx context.Context, req users.CreateRequest) (users.CreateResponse, error) {

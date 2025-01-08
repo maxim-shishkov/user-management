@@ -1,13 +1,5 @@
-#
-GET http://localhost:8080/
-Content-Type: application/json
-
-{}
-
-###
-
 # Create
-POST http://localhost:8080/user/create
+POST {{HOST}}/user/create
 Content-Type: application/json
 
 {
@@ -18,17 +10,17 @@ Content-Type: application/json
 ###
 
 # Get
-POST http://localhost:8080/user/get
+POST {{HOST}}/user/get
 Content-Type: application/json
 
 {
-  "id": 1
+  "id": 2
 }
 
 ###
 
 # List
-POST http://localhost:8080/user/list
+POST {{HOST}}/user/list
 Content-Type: application/json
 
 {}
@@ -36,11 +28,11 @@ Content-Type: application/json
 ###
 
 # Update
-POST http://localhost:8080/user/update
+POST {{HOST}}/user/update
 Content-Type: application/json
 
 {
-  "id": 1,
+  "id": 3,
   "name": "Petr",
   "email": "petr@email.ru"
 }
@@ -48,11 +40,11 @@ Content-Type: application/json
 ###
 
 # Delete
-POST http://localhost:8080/user/delete
+POST {{HOST}}/user/delete
 Content-Type: application/json
 
 {
-  "id": 1
+  "id": 3
 }
 
 ###
